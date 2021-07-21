@@ -23,7 +23,7 @@ import java.util.Random;
 @Fork(3)
 @Warmup(iterations = 10, time = 1)
 @Measurement(iterations = 10, time = 1)
-public class PooledPointSelectBenchmark {
+public class PooledHikariPointSelectBenchmark {
     
     private final Random random = new Random();
     
@@ -33,7 +33,7 @@ public class PooledPointSelectBenchmark {
     
     private PreparedStatement preparedStatement;
     
-    public PooledPointSelectBenchmark() {
+    public PooledHikariPointSelectBenchmark() {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:mysql://localhost:3306/sbtest_direct?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true");
         config.setUsername("root");
