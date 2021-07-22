@@ -47,8 +47,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
     <properties>
         <uberjar.name>benchmarks-shardingsphere5</uberjar.name>
 
-        <!--        <shardingsphere.version>5.0.0-beta</shardingsphere.version>-->
-        <shardingsphere.version>5.0.0-RC1-SNAPSHOT</shardingsphere.version>
+        <shardingsphere.version>5.0.0-beta</shardingsphere.version>
+        <!--        <shardingsphere.version>5.0.0-RC1-SNAPSHOT</shardingsphere.version>-->
     </properties>
 
     <dependencies>

@@ -16,7 +16,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @State(Scope.Group)
 @Fork(3)
@@ -24,7 +24,7 @@ import java.util.Random;
 @Measurement(iterations = 10, time = 3)
 public class PooledHikariPointSelectBenchmark {
     
-    private final Random random = new Random();
+    private final ThreadLocalRandom random = ThreadLocalRandom.current();
     
     private final DataSource dataSource;
     

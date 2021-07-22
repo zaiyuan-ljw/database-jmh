@@ -51,30 +51,36 @@ import java.util.concurrent.ThreadLocalRandom;
 @Fork(3)
 @Warmup(iterations = 10, time = 3)
 @Measurement(iterations = 10, time = 3)
-public class UnpooledPointSelectBenchmark {
+public class UnpooledFullPointSelectBenchmark {
     
     private final ThreadLocalRandom random = ThreadLocalRandom.current();
     
     private Connection connection;
     
-    private PreparedStatement preparedStatement;
+    private PreparedStatement[] preparedStatements = new PreparedStatement[10];
     
     @Setup(Level.Iteration)
     public void setup() throws Exception {
         connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sbtest_direct?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true", "root", "");
-        preparedStatement = connection.prepareStatement("select c from sbtest1 where id = ?");
+        for (int i = 0; i < preparedStatements.length; i++) {
+            preparedStatements[i] = connection.prepareStatement(String.format("select c from sbtest%d where id = ?", i + 1));
+        }
     }
     
     @Group
     @Benchmark
     public void testMethod() throws Exception {
-        preparedStatement.setInt(1, random.nextInt(100000));
+        int randomInt = random.nextInt(100000);
+        PreparedStatement preparedStatement = preparedStatements[randomInt % preparedStatements.length];
+        preparedStatement.setInt(1, randomInt);
         preparedStatement.execute();
     }
     
     @TearDown(Level.Iteration)
     public void tearDown() throws Exception {
-        preparedStatement.close();
+        for (PreparedStatement each : preparedStatements) {
+            each.close();
+        }
         connection.close();
     }
 }
