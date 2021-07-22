@@ -20,8 +20,8 @@ import java.util.Random;
 
 @State(Scope.Group)
 @Fork(3)
-@Warmup(iterations = 10, time = 1)
-@Measurement(iterations = 10, time = 1)
+@Warmup(iterations = 10, time = 3)
+@Measurement(iterations = 10, time = 3)
 public class SingleShardingBenchmark {
     
     private final Random random = new Random();
