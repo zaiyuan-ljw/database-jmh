@@ -3,14 +3,17 @@ package icu.wwj.jmh.shardingsphere5;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.Warmup;
 
 import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Fork(1)
+@BenchmarkMode(Mode.All)
 @Warmup(iterations = 5, time = 3)
 @Measurement(iterations = 5, time = 3)
 public class InlineShardingAlgorithmBenchmark {

@@ -17,6 +17,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @State(Scope.Group)
 @Fork(3)
@@ -24,7 +25,7 @@ import java.util.Random;
 @Measurement(iterations = 10, time = 3)
 public class ReadwriteSplittingPrepareEveryTimeBenchmark {
     
-    private final Random random = new Random();
+    private final Random random = ThreadLocalRandom.current();
     
     private DataSource dataSource;
     

@@ -22,6 +22,7 @@ import java.sql.PreparedStatement;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @State(Scope.Group)
 @Fork(3)
@@ -29,7 +30,7 @@ import java.util.Random;
 @Measurement(iterations = 10, time = 3)
 public class SingleShardingModAlgorithmBenchmark {
     
-    private final Random random = new Random();
+    private final Random random = ThreadLocalRandom.current();
     
     private DataSource dataSource;
     
