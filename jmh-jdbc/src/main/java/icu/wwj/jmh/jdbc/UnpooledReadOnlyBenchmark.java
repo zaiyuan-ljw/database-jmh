@@ -51,7 +51,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Fork(3)
 @Warmup(iterations = 10, time = 3)
 @Measurement(iterations = 10, time = 3)
-public class UnpooledFullPointSelectBenchmark {
+public class UnpooledReadOnlyBenchmark {
     
     private final ThreadLocalRandom random = ThreadLocalRandom.current();
     
@@ -70,10 +70,12 @@ public class UnpooledFullPointSelectBenchmark {
     @Group
     @Benchmark
     public void testMethod() throws Exception {
-        int randomInt = random.nextInt(100000);
-        PreparedStatement preparedStatement = preparedStatements[randomInt % preparedStatements.length];
-        preparedStatement.setInt(1, randomInt);
-        preparedStatement.execute();
+        connection.setAutoCommit(false);
+        for (PreparedStatement each : preparedStatements) {
+            each.setInt(1, random.nextInt(100000));
+            each.execute();
+        }
+        connection.commit();
     }
     
     @TearDown(Level.Iteration)
