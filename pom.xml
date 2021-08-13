@@ -12,6 +12,7 @@
         <module>jmh-shardingsphere4</module>
         <module>jmh-jdbc</module>
         <module>jmh-dangling</module>
+        <module>jmh-shardingsphere3</module>
     </modules>
     <packaging>pom</packaging>
 
