@@ -54,10 +54,8 @@ public class RandomBenchmark {
         return random.nextInt(1000000);
     }
     
-    private final ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
-    
     @Benchmark
     public int testThreadLocalRandom() {
-        return threadLocalRandom.nextInt(1000000);
+        return ThreadLocalRandom.current().nextInt(1000000);
     }
 }

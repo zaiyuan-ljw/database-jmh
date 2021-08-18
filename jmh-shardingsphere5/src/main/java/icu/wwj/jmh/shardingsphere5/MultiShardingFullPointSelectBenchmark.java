@@ -1,11 +1,11 @@
 package icu.wwj.jmh.shardingsphere5;
 
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Group;
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.OperationsPerInvocation;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -13,7 +13,6 @@ import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.annotations.Warmup;
 
 import javax.sql.DataSource;
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.concurrent.ThreadLocalRandom;
@@ -22,23 +21,15 @@ import java.util.concurrent.ThreadLocalRandom;
 @Fork(3)
 @Warmup(iterations = 10, time = 3)
 @Measurement(iterations = 10, time = 3)
-public class MultiShardingReadOnlyBenchmark {
+public class MultiShardingFullPointSelectBenchmark {
     
-    private static final int TABLE_SIZE = 10_000_000;
+    private static final int TABLE_SIZE = 100_000;
     
     private final PreparedStatement[] preparedStatements = new PreparedStatement[10];
     
-    private DataSource dataSource;
+    private final DataSource dataSource = ShardingSpheres.createDataSource("/shardingsphere-jdbc/sysbench.yaml");
     
     private Connection connection;
-    
-    public MultiShardingReadOnlyBenchmark() {
-        try {
-            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new File(getClass().getResource("/shardingsphere-jdbc/sysbench.yaml").getFile()));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
     
     @Setup(Level.Iteration)
     public void setup() throws Exception {
@@ -48,15 +39,14 @@ public class MultiShardingReadOnlyBenchmark {
         }
     }
     
-    @Group("ReadOnlyWithTransaction")
+    @Group("FullPointSelect")
     @Benchmark
-    public void benchMultiShardingReadOnly() throws Exception {
-        connection.setAutoCommit(false);
+    @OperationsPerInvocation(10)
+    public void benchFullPointSelect() throws Exception {
         for (PreparedStatement each : preparedStatements) {
             each.setInt(1, ThreadLocalRandom.current().nextInt(TABLE_SIZE));
             each.execute();
         }
-        connection.commit();
     }
     
     @TearDown(Level.Iteration)

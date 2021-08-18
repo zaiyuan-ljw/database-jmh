@@ -53,22 +53,20 @@ import java.util.concurrent.ThreadLocalRandom;
 @Measurement(iterations = 10, time = 3)
 public class UnpooledPointSelectBenchmark {
     
-    private final ThreadLocalRandom random = ThreadLocalRandom.current();
-    
     private Connection connection;
     
     private PreparedStatement preparedStatement;
     
     @Setup(Level.Iteration)
     public void setup() throws Exception {
-        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sbtest_direct?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true", "root", "");
+        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sbtest_small_direct?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true", "root", "");
         preparedStatement = connection.prepareStatement("select c from sbtest1 where id = ?");
     }
     
     @Group
     @Benchmark
     public void testMethod() throws Exception {
-        preparedStatement.setInt(1, random.nextInt(100000));
+        preparedStatement.setInt(1, ThreadLocalRandom.current().nextInt(10_000_000));
         preparedStatement.execute();
     }
     

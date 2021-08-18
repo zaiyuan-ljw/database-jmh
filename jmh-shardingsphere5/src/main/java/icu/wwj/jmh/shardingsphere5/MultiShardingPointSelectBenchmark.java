@@ -1,6 +1,5 @@
-package icu.wwj.jmh.shardingsphere4;
+package icu.wwj.jmh.shardingsphere5;
 
-import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlShardingDataSourceFactory;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Group;
@@ -13,33 +12,23 @@ import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.annotations.Warmup;
 
 import javax.sql.DataSource;
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 @State(Scope.Group)
 @Fork(3)
 @Warmup(iterations = 10, time = 3)
 @Measurement(iterations = 10, time = 3)
-public class MultiShardingBenchmark {
+public class MultiShardingPointSelectBenchmark {
     
-    private static final int TABLE_SIZE = 10_000_000;
+    private static final int TABLE_SIZE = 100_000;
     
-    private DataSource dataSource;
+    private final DataSource dataSource = ShardingSpheres.createDataSource("/shardingsphere-jdbc/sysbench.yaml");
     
     private Connection connection;
     
     private PreparedStatement preparedStatement;
-    
-    public MultiShardingBenchmark() {
-        try {
-            dataSource = YamlShardingDataSourceFactory.createDataSource(new File(getClass().getResource("/sharding-jdbc/sysbench-multi.yaml").getFile()));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
     
     @Setup(Level.Iteration)
     public void setup() throws Exception {
@@ -47,10 +36,10 @@ public class MultiShardingBenchmark {
         preparedStatement = connection.prepareStatement("select c from sbtest1 where id = ?");
     }
     
-    @Group
+    @Group("FullPointSelect")
     @Benchmark
-    public void benchSingleSharding() throws Exception {
-        preparedStatement.setInt(1, ((Random) ThreadLocalRandom.current()).nextInt(TABLE_SIZE));
+    public void benchFullPointSelect() throws Exception {
+        preparedStatement.setInt(1, ThreadLocalRandom.current().nextInt(TABLE_SIZE));
         preparedStatement.execute();
     }
     

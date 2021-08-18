@@ -36,6 +36,7 @@ import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Group;
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.OperationsPerInvocation;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -53,15 +54,15 @@ import java.util.concurrent.ThreadLocalRandom;
 @Measurement(iterations = 10, time = 3)
 public class UnpooledFullPointSelectBenchmark {
     
-    private final ThreadLocalRandom random = ThreadLocalRandom.current();
-    
-    private Connection connection;
+    private static final int TABLE_SIZE = 10_000_000;
     
     private final PreparedStatement[] preparedStatements = new PreparedStatement[10];
     
+    private Connection connection;
+    
     @Setup(Level.Iteration)
     public void setup() throws Exception {
-        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sbtest_direct?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true", "root", "");
+        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sbtest_small_direct?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true", "root", "");
         for (int i = 0; i < preparedStatements.length; i++) {
             preparedStatements[i] = connection.prepareStatement(String.format("select c from sbtest%d where id = ?", i + 1));
         }
@@ -69,11 +70,12 @@ public class UnpooledFullPointSelectBenchmark {
     
     @Group
     @Benchmark
+    @OperationsPerInvocation(10)
     public void testMethod() throws Exception {
-        int randomInt = random.nextInt(100000);
-        PreparedStatement preparedStatement = preparedStatements[randomInt % preparedStatements.length];
-        preparedStatement.setInt(1, randomInt);
-        preparedStatement.execute();
+        for (PreparedStatement each : preparedStatements) {
+            each.setInt(1, ThreadLocalRandom.current().nextInt(TABLE_SIZE));
+            each.execute();
+        }
     }
     
     @TearDown(Level.Iteration)

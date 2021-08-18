@@ -53,11 +53,11 @@ import java.util.concurrent.ThreadLocalRandom;
 @Measurement(iterations = 10, time = 3)
 public class UnpooledReadOnlyBenchmark {
     
-    private final ThreadLocalRandom random = ThreadLocalRandom.current();
-    
-    private Connection connection;
+    private static final int TABLE_SIZE = 10_000_000;
     
     private final PreparedStatement[] preparedStatements = new PreparedStatement[10];
+    
+    private Connection connection;
     
     @Setup(Level.Iteration)
     public void setup() throws Exception {
@@ -72,7 +72,7 @@ public class UnpooledReadOnlyBenchmark {
     public void testMethod() throws Exception {
         connection.setAutoCommit(false);
         for (PreparedStatement each : preparedStatements) {
-            each.setInt(1, random.nextInt(100000));
+            each.setInt(1, ThreadLocalRandom.current().nextInt(TABLE_SIZE));
             each.execute();
         }
         connection.commit();
