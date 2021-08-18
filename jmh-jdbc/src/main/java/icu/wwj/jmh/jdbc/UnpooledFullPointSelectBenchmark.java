@@ -44,7 +44,6 @@ import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.annotations.Warmup;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -54,7 +53,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Measurement(iterations = 10, time = 3)
 public class UnpooledFullPointSelectBenchmark {
     
-    private static final int TABLE_SIZE = 10_000_000;
+    private static final int TABLE_SIZE = 1_000_000;
     
     private final PreparedStatement[] preparedStatements = new PreparedStatement[10];
     
@@ -62,13 +61,13 @@ public class UnpooledFullPointSelectBenchmark {
     
     @Setup(Level.Iteration)
     public void setup() throws Exception {
-        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sbtest_small_direct?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true", "root", "");
+        connection = Jdbcs.getConnection();
         for (int i = 0; i < preparedStatements.length; i++) {
             preparedStatements[i] = connection.prepareStatement(String.format("select c from sbtest%d where id = ?", i + 1));
         }
     }
     
-    @Group
+    @Group("FullPointSelect")
     @Benchmark
     @OperationsPerInvocation(10)
     public void testMethod() throws Exception {
