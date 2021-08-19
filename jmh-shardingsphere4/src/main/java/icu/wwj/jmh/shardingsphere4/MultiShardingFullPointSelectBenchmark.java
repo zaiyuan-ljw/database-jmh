@@ -1,4 +1,4 @@
-package icu.wwj.jmh.shardingsphere5;
+package icu.wwj.jmh.shardingsphere4;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Fork;
@@ -25,7 +25,7 @@ public class MultiShardingFullPointSelectBenchmark {
     
     private static final int TABLE_SIZE = 1_000_000;
     
-    private static final DataSource dataSource = ShardingSpheres.createDataSource("/shardingsphere-jdbc/sysbench-remote-single.yaml");
+    private static final DataSource dataSource = ShardingSpheres.createDataSource("/sharding-jdbc/sysbench-remote-single.yaml");
     
     private final PreparedStatement[] preparedStatements = new PreparedStatement[10];
     
@@ -42,7 +42,7 @@ public class MultiShardingFullPointSelectBenchmark {
     @Group("FullPointSelect")
     @Benchmark
     @OperationsPerInvocation(10)
-    public void benchFullPointSelect() throws Exception {
+    public void benchSingleSharding() throws Exception {
         for (PreparedStatement each : preparedStatements) {
             each.setInt(1, ThreadLocalRandom.current().nextInt(TABLE_SIZE));
             each.execute();
