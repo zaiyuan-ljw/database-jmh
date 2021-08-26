@@ -5,8 +5,8 @@ dataSources:
     jdbcUrl: jdbc:mysql://10.12.3.114:3306/sbtest_direct?useSSL=false&useServerPrepStmts=false&cachePrepStmts=false
     username: root
     password: sphereEx@2021
-    maximumPoolSize: 256
-    minimumIdle: 256
+    maximumPoolSize: 1024
+    minimumIdle: 1024
 
 rules:
   - !SHARDING

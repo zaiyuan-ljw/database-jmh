@@ -32,25 +32,19 @@
 package icu.wwj.jmh.jdbc;
 
 import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Group;
 import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.OperationsPerInvocation;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
-import org.openjdk.jmh.annotations.Warmup;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.concurrent.ThreadLocalRandom;
 
 @State(Scope.Group)
-@Fork(3)
-@Warmup(iterations = 10, time = 3)
-@Measurement(iterations = 10, time = 3)
 public class UnpooledFullPointSelectBenchmark {
     
     private static final int TABLE_SIZE = 1_000_000;
