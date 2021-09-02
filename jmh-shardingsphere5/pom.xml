@@ -115,6 +115,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                                     <resource>META-INF/services/org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade</resource>
                                 </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/services/org.apache.shardingsphere.sharding.spi.ShardingAlgorithm</resource>
+                                </transformer>
                             </transformers>
                             <filters>
                                 <filter>
