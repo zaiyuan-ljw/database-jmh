@@ -10,10 +10,16 @@ import java.sql.SQLException;
 public final class ShardingSpheres {
     
     public static DataSource createDataSource(final String path) {
+        String configurationFile = System.getProperty("conf");
         try {
-            return YamlShardingSphereDataSourceFactory.createDataSource(new File(ShardingSpheres.class.getResource(path).getFile()));
+            if (configurationFile != null) {
+                return YamlShardingSphereDataSourceFactory.createDataSource(new File(configurationFile));
+            } else {
+                return YamlShardingSphereDataSourceFactory.createDataSource(new File(ShardingSpheres.class.getResource(path).getFile()));
+            }
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
     }
 }
+
