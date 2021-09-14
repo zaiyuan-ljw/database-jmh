@@ -8,11 +8,15 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class ShardingSpheres {
-    
-    public static DataSource createDataSource(String path) {
-        File file = new File(ShardingSpheres.class.getResource(path).getFile());
+
+    public static DataSource createDataSource(final String path) {
+        String configurationFile = System.getProperty("conf");
         try {
-            return YamlShardingDataSourceFactory.createDataSource(file);
+            if (configurationFile != null) {
+                return YamlShardingDataSourceFactory.createDataSource(new File(configurationFile));
+            } else {
+                return YamlShardingDataSourceFactory.createDataSource(new File(ShardingSpheres.class.getResource(path).getFile()));
+            }
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
