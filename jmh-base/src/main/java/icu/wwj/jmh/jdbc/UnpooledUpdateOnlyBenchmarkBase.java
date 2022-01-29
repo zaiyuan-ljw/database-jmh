@@ -40,40 +40,31 @@ import org.openjdk.jmh.annotations.TearDown;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 @State(Scope.Thread)
-public abstract class UnpooledPointSelectWithCBenchmarkBase implements JDBCConnectionProvider {
+public abstract class UnpooledUpdateOnlyBenchmarkBase implements JDBCConnectionProvider {
     
-    private PreparedStatement pointSelectStatement;
-    
-    private PreparedStatement pointSelectWithCStatement;
-    
-    private static String decryptC;
+    private PreparedStatement updateStatement;
     
     private Connection connection;
     
     @Setup(Level.Trial)
     public void setup() throws Exception {
         connection = getConnection();
-        pointSelectWithCStatement = connection.prepareStatement("select c from sbtest1 where id = ? and c = ?");
+        updateStatement = connection.prepareStatement("update sbtest1 set k=k+1, c=? where id=? and c = ?;");
     }
     
     @Benchmark
-    public void oltpPointSelectWithC() throws Exception {
-        pointSelectWithCStatement.setInt(1,1);
-//        pointSelectWithCStatement.setString(2, decryptC);
-        pointSelectWithCStatement.setString(2, "68487932199-96439406143-93774651418-41631865787-96406072701-20604855487-25459966574-28203206787-41238978918-19503783441");
-        ResultSet resultSet = pointSelectWithCStatement.executeQuery();
-        while (resultSet.next()) {
-            resultSet.getString(1);
-        }
+    public void oltpUpdateOnly() throws Exception {
+        updateStatement.setString(1,"test");
+        updateStatement.setInt(2,1);
+        updateStatement.setString(3,"test");
+        updateStatement.executeUpdate();
     }
     
     @TearDown(Level.Trial)
     public void tearDown() throws Exception {
-        pointSelectWithCStatement.close();
-//        pointSelectStatement.close();
+        updateStatement.close();
         connection.close();
     }
 }
