@@ -50,30 +50,26 @@ public abstract class UnpooledInsertOnlyBenchmarkBase implements JDBCConnectionP
     
     private Connection connection;
     
-    private static int id;
-    
     @Setup(Level.Trial)
     public void setup() throws Exception {
         connection = getConnection();
         insertStatement = connection.prepareStatement("insert into sbtest1(k, c, pad) values(?, ?, ?);");
         deleteStatement = connection.prepareStatement("delete from sbtest1 where id > 0;");
-        deleteStatement.execute();
+//        deleteStatement.execute();
     }
     
     @Benchmark
     public void oltpInsertOnly() throws Exception {
-        insertStatement.setInt(1,id);
-        insertStatement.setInt(2,1);
+        insertStatement.setInt(1,1);
+        insertStatement.setString(2,"test");
         insertStatement.setString(3,"test");
-        insertStatement.setString(4,"test");
         insertStatement.execute();
-        id++;
     }
     
     @TearDown(Level.Trial)
     public void tearDown() throws Exception {
         insertStatement.close();
-        deleteStatement.execute();
+//        deleteStatement.execute();
         deleteStatement.close();
         connection.close();
     }

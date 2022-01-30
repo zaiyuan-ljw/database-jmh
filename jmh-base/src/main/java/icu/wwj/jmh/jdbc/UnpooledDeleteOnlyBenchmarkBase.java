@@ -42,29 +42,31 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 @State(Scope.Thread)
-public abstract class UnpooledUpdateOnlyBenchmarkBase implements JDBCConnectionProvider {
+public abstract class UnpooledDeleteOnlyBenchmarkBase implements JDBCConnectionProvider {
     
-    private PreparedStatement updateStatement;
+    private PreparedStatement deleteStatement;
     
     private Connection connection;
+    
+    private static int id = 1;
     
     @Setup(Level.Trial)
     public void setup() throws Exception {
         connection = getConnection();
-        updateStatement = connection.prepareStatement("update sbtest1 set k=k+1, c=? where id=? and c = ?;");
+        deleteStatement = connection.prepareStatement("delete from sbtest1 where id=? and c = ?;");
     }
     
     @Benchmark
-    public void oltpUpdateOnly() throws Exception {
-        updateStatement.setString(1,"test");
-        updateStatement.setInt(2,1);
-        updateStatement.setString(3,"test");
-        updateStatement.execute();
+    public void oltpInsertOnly() throws Exception {
+        deleteStatement.setInt(1,id);
+        deleteStatement.setString(2,"test");
+        deleteStatement.execute();
+        id++;
     }
     
     @TearDown(Level.Trial)
     public void tearDown() throws Exception {
-        updateStatement.close();
+        deleteStatement.close();
         connection.close();
     }
 }
