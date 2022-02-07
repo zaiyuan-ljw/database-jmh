@@ -1,6 +1,6 @@
 package icu.wwj.jmh.shardingsphere5.code;
 
-import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
+import org.apache.shardingsphere.infra.context.refresher.MetadataRefreshEngine;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
 import org.openjdk.jmh.Main;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -18,7 +18,7 @@ public class MetaDataRefreshEngineBenchmark {
     
     @Benchmark
     public void benchMetaDataRefreshEngine() throws SQLException {
-        new MetaDataRefreshEngine(null, null, null, null).refresh(new PostgreSQLSelectStatement(), null);
+        new MetadataRefreshEngine(null, null, null).refresh(new PostgreSQLSelectStatement(), null);
     }
     
     public static void main(String[] args) throws IOException {

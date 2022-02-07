@@ -46,6 +46,8 @@ public abstract class UnpooledDeleteOnlyBenchmarkBase implements JDBCConnectionP
     
     private PreparedStatement deleteStatement;
     
+    private PreparedStatement insertStatement;
+    
     private Connection connection;
     
     private static int id = 1;
@@ -53,6 +55,7 @@ public abstract class UnpooledDeleteOnlyBenchmarkBase implements JDBCConnectionP
     @Setup(Level.Trial)
     public void setup() throws Exception {
         connection = getConnection();
+        insertStatement = connection.prepareStatement("insert into sbtest1(id,k, c, pad) values(?,?, ?, ?);");
         deleteStatement = connection.prepareStatement("delete from sbtest1 where id=? and c = ?;");
     }
     
@@ -61,6 +64,11 @@ public abstract class UnpooledDeleteOnlyBenchmarkBase implements JDBCConnectionP
         deleteStatement.setInt(1,id);
         deleteStatement.setString(2,"test");
         deleteStatement.execute();
+        insertStatement.setInt(1,id);
+        insertStatement.setString(2,"test");
+        insertStatement.setString(3,"test");
+        insertStatement.setString(4,"test");
+        insertStatement.execute();
         id++;
     }
     
