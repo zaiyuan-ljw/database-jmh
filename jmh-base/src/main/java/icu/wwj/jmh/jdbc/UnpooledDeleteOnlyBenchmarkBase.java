@@ -40,9 +40,12 @@ import org.openjdk.jmh.annotations.TearDown;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.concurrent.ThreadLocalRandom;
 
 @State(Scope.Thread)
 public abstract class UnpooledDeleteOnlyBenchmarkBase implements JDBCConnectionProvider {
+    
+    private final ThreadLocalRandom random = ThreadLocalRandom.current();
     
     private PreparedStatement deleteStatement;
     
@@ -50,31 +53,34 @@ public abstract class UnpooledDeleteOnlyBenchmarkBase implements JDBCConnectionP
     
     private Connection connection;
     
-    private static int id = 1;
+    private static int TABLE_SIZE = 1_000_000;
     
     @Setup(Level.Trial)
     public void setup() throws Exception {
         connection = getConnection();
+        connection.setAutoCommit(false);
         insertStatement = connection.prepareStatement("insert into sbtest1(id,k, c, pad) values(?,?, ?, ?);");
         deleteStatement = connection.prepareStatement("delete from sbtest1 where id=? and c = ?;");
     }
     
     @Benchmark
-    public void oltpInsertOnly() throws Exception {
+    public void oltpDeleteOnly() throws Exception {
+        int id = random.nextInt(TABLE_SIZE);
         deleteStatement.setInt(1,id);
         deleteStatement.setString(2,"test");
         deleteStatement.execute();
         insertStatement.setInt(1,id);
-        insertStatement.setString(2,"test");
+        insertStatement.setInt(2,id);
         insertStatement.setString(3,"test");
         insertStatement.setString(4,"test");
         insertStatement.execute();
-        id++;
+        connection.commit();
     }
     
     @TearDown(Level.Trial)
     public void tearDown() throws Exception {
         deleteStatement.close();
+        insertStatement.close();
         connection.close();
     }
 }
