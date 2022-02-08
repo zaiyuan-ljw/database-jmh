@@ -40,40 +40,47 @@ import org.openjdk.jmh.annotations.TearDown;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.util.concurrent.ThreadLocalRandom;
 
 @State(Scope.Thread)
-public abstract class UnpooledPointSelectWithCBenchmarkBase implements JDBCConnectionProvider {
+public abstract class UnpooledDeleteOnlyBenchmarkBase implements JDBCConnectionProvider {
     
-    private PreparedStatement pointSelectStatement;
+    private final ThreadLocalRandom random = ThreadLocalRandom.current();
     
-    private PreparedStatement pointSelectWithCStatement;
+    private PreparedStatement deleteStatement;
     
-    private static String decryptC;
+    private PreparedStatement insertStatement;
     
     private Connection connection;
+    
+    private static int TABLE_SIZE = 1_000_000;
     
     @Setup(Level.Trial)
     public void setup() throws Exception {
         connection = getConnection();
-        pointSelectWithCStatement = connection.prepareStatement("select c from sbtest1 where id = ? and c = ?");
+        connection.setAutoCommit(false);
+        insertStatement = connection.prepareStatement("insert into sbtest1(id,k, c, pad) values(?,?, ?, ?);");
+        deleteStatement = connection.prepareStatement("delete from sbtest1 where id=? and c = ?;");
     }
     
     @Benchmark
-    public void oltpPointSelectWithC() throws Exception {
-        pointSelectWithCStatement.setInt(1,1);
-//        pointSelectWithCStatement.setString(2, decryptC);
-        pointSelectWithCStatement.setString(2, "68487932199-96439406143-93774651418-41631865787-96406072701-20604855487-25459966574-28203206787-41238978918-19503783441");
-        ResultSet resultSet = pointSelectWithCStatement.executeQuery();
-        while (resultSet.next()) {
-            resultSet.getString(1);
-        }
+    public void oltpDeleteOnly() throws Exception {
+        int id = random.nextInt(TABLE_SIZE);
+        deleteStatement.setInt(1,id);
+        deleteStatement.setString(2,"test");
+        deleteStatement.execute();
+        insertStatement.setInt(1,id);
+        insertStatement.setInt(2,id);
+        insertStatement.setString(3,"test");
+        insertStatement.setString(4,"test");
+        insertStatement.execute();
+        connection.commit();
     }
     
     @TearDown(Level.Trial)
     public void tearDown() throws Exception {
-        pointSelectWithCStatement.close();
-//        pointSelectStatement.close();
+        deleteStatement.close();
+        insertStatement.close();
         connection.close();
     }
 }

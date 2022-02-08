@@ -40,40 +40,37 @@ import org.openjdk.jmh.annotations.TearDown;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 @State(Scope.Thread)
-public abstract class UnpooledPointSelectWithCBenchmarkBase implements JDBCConnectionProvider {
+public abstract class UnpooledInsertOnlyBenchmarkBase implements JDBCConnectionProvider {
     
-    private PreparedStatement pointSelectStatement;
+    private PreparedStatement insertStatement;
     
-    private PreparedStatement pointSelectWithCStatement;
-    
-    private static String decryptC;
+    private PreparedStatement deleteStatement;
     
     private Connection connection;
     
     @Setup(Level.Trial)
     public void setup() throws Exception {
         connection = getConnection();
-        pointSelectWithCStatement = connection.prepareStatement("select c from sbtest1 where id = ? and c = ?");
+        insertStatement = connection.prepareStatement("insert into sbtest1(k, c, pad) values(?, ?, ?);");
+        deleteStatement = connection.prepareStatement("delete from sbtest1 where id > 0;");
+//        deleteStatement.execute();
     }
     
     @Benchmark
-    public void oltpPointSelectWithC() throws Exception {
-        pointSelectWithCStatement.setInt(1,1);
-//        pointSelectWithCStatement.setString(2, decryptC);
-        pointSelectWithCStatement.setString(2, "68487932199-96439406143-93774651418-41631865787-96406072701-20604855487-25459966574-28203206787-41238978918-19503783441");
-        ResultSet resultSet = pointSelectWithCStatement.executeQuery();
-        while (resultSet.next()) {
-            resultSet.getString(1);
-        }
+    public void oltpInsertOnly() throws Exception {
+        insertStatement.setInt(1,1);
+        insertStatement.setString(2,"test");
+        insertStatement.setString(3,"test");
+        insertStatement.execute();
     }
     
     @TearDown(Level.Trial)
     public void tearDown() throws Exception {
-        pointSelectWithCStatement.close();
-//        pointSelectStatement.close();
+        insertStatement.close();
+//        deleteStatement.execute();
+        deleteStatement.close();
         connection.close();
     }
 }
