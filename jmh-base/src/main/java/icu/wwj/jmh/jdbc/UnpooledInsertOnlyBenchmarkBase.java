@@ -31,6 +31,7 @@
 
 package icu.wwj.jmh.jdbc;
 
+import icu.wwj.jmh.util.Strings;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Scope;
@@ -40,6 +41,8 @@ import org.openjdk.jmh.annotations.TearDown;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @State(Scope.Thread)
 public abstract class UnpooledInsertOnlyBenchmarkBase implements JDBCConnectionProvider {
@@ -49,6 +52,8 @@ public abstract class UnpooledInsertOnlyBenchmarkBase implements JDBCConnectionP
     private PreparedStatement deleteStatement;
     
     private Connection connection;
+    
+    private Random random = ThreadLocalRandom.current();
     
     @Setup(Level.Trial)
     public void setup() throws Exception {
@@ -60,9 +65,9 @@ public abstract class UnpooledInsertOnlyBenchmarkBase implements JDBCConnectionP
     
     @Benchmark
     public void oltpInsertOnly() throws Exception {
-        insertStatement.setInt(1,1);
-        insertStatement.setString(2,"test");
-        insertStatement.setString(3,"test");
+        insertStatement.setInt(1,random.nextInt(Integer.MAX_VALUE));
+        insertStatement.setString(2, Strings.randomString(120));
+        insertStatement.setString(3, Strings.randomString(60));
         insertStatement.execute();
     }
     
