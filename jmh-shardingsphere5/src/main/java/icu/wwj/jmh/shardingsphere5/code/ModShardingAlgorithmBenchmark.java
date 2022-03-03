@@ -1,5 +1,6 @@
 package icu.wwj.jmh.shardingsphere5.code;
 
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -47,7 +48,8 @@ public class ModShardingAlgorithmBenchmark {
     
     @Benchmark
     public String benchModShardingAlgorithm() {
-        return algorithm.doSharding(availableTargets, new PreciseShardingValue<>("", "", random.nextLong(Long.MAX_VALUE)));
+        DataNodeInfo dataNodeInfo = new DataNodeInfo("ds_", 1, '0');
+        return algorithm.doSharding(availableTargets, new PreciseShardingValue<>("", "", dataNodeInfo, random.nextLong(Long.MAX_VALUE)));
     }
     
     public static void main(String[] args) throws RunnerException {
