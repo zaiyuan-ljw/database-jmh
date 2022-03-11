@@ -60,10 +60,10 @@ public class TrafficAlgorithmCompareBenchmark {
         sqlHintAlgorithm.init();
     }
     
-    @Benchmark
-    public void testSQLHintAlgorithmMatch() {
-        sqlHintAlgorithm.match(new HintTrafficValue<>("/* shardingsphere hint:use_traffic=true */"));
-    }
+//    @Benchmark
+//    public void testSQLHintAlgorithmMatch() {
+//        sqlHintAlgorithm.match(new HintTrafficValue<>("/* shardingsphere hint:use_traffic=true */"));
+//    }
     
     @Benchmark
     public void testSQLMatchAlgorithmMatch() {

@@ -53,11 +53,14 @@ public abstract class UnpooledPointSelectBenchmarkBase implements JDBCConnection
     @Setup(Level.Trial)
     public void setup() throws Exception {
         connection = getConnection();
-        for (int i = 0; i < preparedStatements.length; i++) {
-            preparedStatements[i] = connection.prepareStatement(String.format("select c from sbtest%d where id = ?", i + 1));
-        }
+//       for (int i = 0; i < preparedStatements.length; i++) {
+//           preparedStatements[i] = connection.prepareStatement(String.format("/* shardingsphere hint:useTraffic=true */SELECT SUM(id), AVG(id), COUNT(id) FROM sbtest1 WHERE id <= 1000 GROUP BY id ORDER BY k;", i + 1));
+//       }
+        int i=0;
+        preparedStatements[i] = connection.prepareStatement("/* shardingsphere hint:useTraffic=true */SELECT SUM(id), AVG(id), COUNT(id) FROM sbtest1 WHERE id <= 1000 GROUP BY id ORDER BY k;");
+
     }
-    
+
     @Benchmark
     public void oltpPointSelect() throws Exception {
         for (PreparedStatement each : preparedStatements) {
