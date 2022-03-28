@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Remote_Federation_Cross_Schema" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.openjdk.jmh.Main" />
+    <module name="jmh-jdbc" />
+    <option name="PROGRAM_PARAMETERS" value="com.sphereex.jmh.jdbc.UnpooledFederationSameSchemaBenchmarkJDBC -f 2 -i2 -r50 -t 100 -w 3 -wf 1 -wi 1" />
+    <target name="root@119.3.217.169:22" />
+    <option name="VM_PARAMETERS" value="-Dconf=/root/config-sharding.yaml -Dtables=5 -DtableSize=1000000" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
