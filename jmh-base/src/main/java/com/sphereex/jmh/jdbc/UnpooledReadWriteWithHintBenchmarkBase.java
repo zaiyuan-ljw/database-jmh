@@ -3,7 +3,9 @@ package com.sphereex.jmh.jdbc;
 import com.sphereex.jmh.config.BenchmarkParameters;
 import com.sphereex.jmh.util.Strings;
 import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -52,6 +54,7 @@ public abstract class UnpooledReadWriteWithHintBenchmarkBase implements JDBCConn
     }
     
     @Benchmark
+    @BenchmarkMode({Mode.All})
     public void oltpReadWrite() throws Exception {
         for (PreparedStatement each : reads) {
             each.setInt(1, random.nextInt(BenchmarkParameters.TABLE_SIZE));
