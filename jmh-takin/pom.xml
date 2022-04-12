@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>jmh-test</artifactId>
+        <groupId>com.sphereex.jmh</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>jmh-takin</artifactId>
+    <name>JMH benchmark: Takin</name>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <pradar.core.version>1.0.1</pradar.core.version>
+        <module.datasource.common.version>1.0.0</module.datasource.common.version>
+        <simulator.internal.bootstrap.api.version>1.0.0</simulator.internal.bootstrap.api.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.sphereex.jmh</groupId>
+            <artifactId>jmh-base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.shulie.instrument.module</groupId>
+            <artifactId>module-pradar-core</artifactId>
+            <version>${pradar.core.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jdbc</artifactId>
+            <version>8.5.31</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.shulie.instrument.module</groupId>
+            <artifactId>simulator-internal-bootstrap-api</artifactId>
+            <version>${simulator.internal.bootstrap.api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+</project>
