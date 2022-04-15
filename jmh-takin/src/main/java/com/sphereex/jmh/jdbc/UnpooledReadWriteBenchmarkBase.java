@@ -1,20 +1,19 @@
 package com.sphereex.jmh.jdbc;
 
 import com.sphereex.jmh.config.BenchmarkParameters;
+import com.sphereex.jmh.takin.Takins;
 import com.sphereex.jmh.util.Strings;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.annotations.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicLong;
 
 @State(Scope.Thread)
 public abstract class UnpooledReadWriteBenchmarkBase implements JDBCConnectionProvider {
+
+    private AtomicLong count = new AtomicLong();
     
     private final ThreadLocalRandom random = ThreadLocalRandom.current();
     
@@ -27,33 +26,31 @@ public abstract class UnpooledReadWriteBenchmarkBase implements JDBCConnectionPr
     private final PreparedStatement[] deletes = new PreparedStatement[BenchmarkParameters.TABLES];
     
     private final PreparedStatement[] inserts = new PreparedStatement[BenchmarkParameters.TABLES];
-    
+
     private Connection connection;
     
-    @Setup(Level.Trial)
+    @Setup(Level.Iteration)
     public void setup() throws Exception {
         connection = getConnection();
-        connection.setAutoCommit(false);
         for (int i = 0; i < reads.length; i++) {
-            reads[i] = connection.prepareStatement(String.format("select c from sbtest%d where id=?", i + 1));
+            reads[i] = connection.prepareStatement(Takins.replaceTable(String.format("select c from sbtest%d where id=?", i + 1)));
         }
         for (int i = 0; i < indexUpdates.length; i++) {
-            indexUpdates[i] = connection.prepareStatement(String.format("update sbtest%d set k=k+1 where id=?", i + 1));
+            indexUpdates[i] = connection.prepareStatement(Takins.replaceTable(String.format("update sbtest%d set k=k+1 where id=?", i + 1)));
         }
         for (int i = 0; i < nonIndexUpdates.length; i++) {
-            nonIndexUpdates[i] = connection.prepareStatement(String.format("update sbtest%d set c=? where id=?", i + 1));
+            nonIndexUpdates[i] = connection.prepareStatement(Takins.replaceTable(String.format("update sbtest%d set c=? where id=?", i + 1)));
         }
         for (int i = 0; i < deletes.length; i++) {
-            deletes[i] = connection.prepareStatement(String.format("delete from sbtest%d where id=?", i + 1));
-        }
-        for (int i = 0; i < inserts.length; i++) {
-            inserts[i] = connection.prepareStatement(String.format("insert into sbtest%d (id,k,c,pad) values (?,?,?,?)", i + 1));
+            deletes[i] = connection.prepareStatement(Takins.replaceTable(String.format("delete from sbtest%d where id=?", i + 1)));
+            inserts[i] = connection.prepareStatement(Takins.replaceTable(String.format("insert into sbtest%d (id,k,c,pad) values (?,?,?,?)", i + 1)));
         }
     }
     
     @Benchmark
     public void oltpReadWrite() throws Exception {
         try {
+            connection.setAutoCommit(false);
             for (PreparedStatement each : reads) {
                 each.setInt(1, random.nextInt(BenchmarkParameters.TABLE_SIZE));
                 each.execute();
@@ -69,9 +66,9 @@ public abstract class UnpooledReadWriteBenchmarkBase implements JDBCConnectionPr
 
             int table = random.nextInt(BenchmarkParameters.TABLES);
             int id = random.nextInt(BenchmarkParameters.TABLE_SIZE);
+
             PreparedStatement delete = deletes[table];
             delete.setInt(1, id);
-            delete.execute();
 
             PreparedStatement insert = inserts[table];
             insert.setInt(1, id);
@@ -79,13 +76,18 @@ public abstract class UnpooledReadWriteBenchmarkBase implements JDBCConnectionPr
             insert.setString(3, Strings.randomString(120));
             insert.setString(4, Strings.randomString(60));
 
+            delete.execute();
+            insert.execute();
+
+            count.addAndGet(1);
+
             connection.commit();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
     
-    @TearDown(Level.Trial)
+    @TearDown(Level.Iteration)
     public void tearDown() throws Exception {
         for (PreparedStatement each : reads) {
             each.close();
@@ -102,6 +104,7 @@ public abstract class UnpooledReadWriteBenchmarkBase implements JDBCConnectionPr
         for (PreparedStatement each : inserts) {
             each.close();
         }
+
         connection.close();
     }
 }
