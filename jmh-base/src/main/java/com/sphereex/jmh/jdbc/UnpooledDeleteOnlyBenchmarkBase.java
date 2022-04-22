@@ -31,12 +31,7 @@
 
 package com.sphereex.jmh.jdbc;
 
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.annotations.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -59,20 +54,19 @@ public abstract class UnpooledDeleteOnlyBenchmarkBase implements JDBCConnectionP
     public void setup() throws Exception {
         connection = getConnection();
         connection.setAutoCommit(false);
-        insertStatement = connection.prepareStatement("insert into sbtest1(id,k, c, pad) values(?,?, ?, ?);");
-        deleteStatement = connection.prepareStatement("delete from sbtest1 where id=? and c = ?;");
+        deleteStatement = connection.prepareStatement("delete from sbtest1 where id=?;");
+        insertStatement = connection.prepareStatement("insert into sbtest1(id,k, pad) values(?,?, ?);");
     }
     
     @Benchmark
+    @BenchmarkMode({Mode.Throughput, Mode.AverageTime, Mode.SampleTime})
     public void oltpDeleteOnly() throws Exception {
         int id = random.nextInt(TABLE_SIZE);
         deleteStatement.setInt(1,id);
-        deleteStatement.setString(2,"test");
         deleteStatement.execute();
         insertStatement.setInt(1,id);
         insertStatement.setInt(2,id);
         insertStatement.setString(3,"test");
-        insertStatement.setString(4,"test");
         insertStatement.execute();
         connection.commit();
     }

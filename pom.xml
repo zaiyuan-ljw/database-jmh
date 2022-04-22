@@ -17,6 +17,7 @@
     
         <module>jmh-dangling</module>
         <module>jmh-takin</module>
+        <module>jmh-takin-web</module>
     </modules>
     <packaging>pom</packaging>
     

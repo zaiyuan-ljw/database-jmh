@@ -1,12 +1,12 @@
 package com.sphereex.jmh.takin;
 
-import com.sphereex.jmh.jdbc.UnpooledUpdateOnlyBenchmarkBase;
+import com.sphereex.jmh.jdbc.UnpooledIndexUpdateOnlyBenchmarkBase;
 import lombok.SneakyThrows;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 
-public class TakinUpdateOnlyBenchmark extends UnpooledUpdateOnlyBenchmarkBase {
+public class TakinIndexUpdateOnlyBenchmark extends UnpooledIndexUpdateOnlyBenchmarkBase {
     
     private static DataSource DATA_SOURCE;
     

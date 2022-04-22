@@ -2,12 +2,7 @@ package com.sphereex.jmh.jdbc;
 
 import com.sphereex.jmh.config.BenchmarkParameters;
 import com.sphereex.jmh.util.Strings;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.annotations.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -52,6 +47,7 @@ public abstract class UnpooledReadWriteBenchmarkBase implements JDBCConnectionPr
     }
     
     @Benchmark
+    @BenchmarkMode({Mode.Throughput, Mode.AverageTime, Mode.SampleTime})
     public void oltpReadWrite() throws Exception {
         try {
             for (PreparedStatement each : reads) {
@@ -78,6 +74,7 @@ public abstract class UnpooledReadWriteBenchmarkBase implements JDBCConnectionPr
             insert.setInt(2, random.nextInt(Integer.MAX_VALUE));
             insert.setString(3, Strings.randomString(120));
             insert.setString(4, Strings.randomString(60));
+            insert.execute();
 
             connection.commit();
         } catch (Exception e) {

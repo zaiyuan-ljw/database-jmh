@@ -31,28 +31,34 @@
 
 package com.sphereex.jmh.jdbc;
 
+import com.sphereex.jmh.config.BenchmarkParameters;
+import com.sphereex.jmh.util.Strings;
 import org.openjdk.jmh.annotations.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.concurrent.ThreadLocalRandom;
 
 @State(Scope.Thread)
-public abstract class UnpooledUpdateOnlyBenchmarkBase implements JDBCConnectionProvider {
+public abstract class UnpooledNoneIndexUpdateOnlyBenchmarkBase implements JDBCConnectionProvider {
     
     private PreparedStatement updateStatement;
+
+    private final ThreadLocalRandom random = ThreadLocalRandom.current();
     
     private Connection connection;
     
     @Setup(Level.Trial)
     public void setup() throws Exception {
         connection = getConnection();
-        updateStatement = connection.prepareStatement("update sbtest1 set k=k+1 where id=?;");
+        updateStatement = connection.prepareStatement("update sbtest1 set c=? where id=?;");
     }
     
     @Benchmark
     @BenchmarkMode({Mode.Throughput, Mode.AverageTime, Mode.SampleTime})
     public void oltpUpdateOnly() throws Exception {
-        updateStatement.setInt(1,1);
+        updateStatement.setString(1, Strings.randomString(120));
+        updateStatement.setInt(2, random.nextInt(BenchmarkParameters.TABLE_SIZE));
         updateStatement.execute();
     }
     

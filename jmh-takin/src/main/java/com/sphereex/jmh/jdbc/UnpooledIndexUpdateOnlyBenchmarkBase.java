@@ -37,7 +37,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 @State(Scope.Thread)
-public abstract class UnpooledUpdateOnlyBenchmarkBase implements JDBCConnectionProvider {
+public abstract class UnpooledIndexUpdateOnlyBenchmarkBase implements JDBCConnectionProvider {
     
     private PreparedStatement updateStatement;
     

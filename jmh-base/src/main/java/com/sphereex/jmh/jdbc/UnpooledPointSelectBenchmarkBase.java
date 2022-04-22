@@ -32,12 +32,7 @@
 package com.sphereex.jmh.jdbc;
 
 import com.sphereex.jmh.config.BenchmarkParameters;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.annotations.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -60,6 +55,7 @@ public abstract class UnpooledPointSelectBenchmarkBase implements JDBCConnection
     }
 
     @Benchmark
+    @BenchmarkMode({Mode.Throughput, Mode.AverageTime, Mode.SampleTime})
     public void oltpPointSelect() throws Exception {
         for (PreparedStatement each : preparedStatements) {
             each.setInt(1, ThreadLocalRandom.current().nextInt(BenchmarkParameters.TABLE_SIZE));
